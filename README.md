@@ -1,4 +1,4 @@
-[README (3).md](https://github.com/user-attachments/files/26350131/README.3.md)
+
 # 💰 FinTrack — Personal Finance Tracker
 
 A full-stack personal finance tracker built as part of the ITC Web Convener Assignment (Tasks 2, 3 & 4).
