@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# Database file — contains real user data
+finance.db
+
+# Environment variables — contains secrets
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
