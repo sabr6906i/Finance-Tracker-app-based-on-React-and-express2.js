@@ -8,7 +8,7 @@
 //  - No PUT route exists — edit button is hidden in Task 4
 //  - Password must be 6+ chars (matched in AuthPage too)
 
-const API_BASE = "https://finance-tracker-app-hybh.onrender.com";
+const API_BASE = "https://finance-tracker-app-based-on-react-and.onrender.com";
 
 // ── Token helpers ─────────────────────────────────────────────
 export const getToken    = ()      => localStorage.getItem("finance_token");
