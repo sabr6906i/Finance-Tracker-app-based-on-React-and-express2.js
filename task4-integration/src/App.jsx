@@ -167,7 +167,7 @@ export default function App() {
           ) : (
             <TransactionList
               transactions={transactions}
-              onEdit={null}
+              onEdit={setEditingTx}
               onDelete={handleDelete}
             />
           )}
