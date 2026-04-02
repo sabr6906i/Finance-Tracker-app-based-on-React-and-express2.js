@@ -80,10 +80,11 @@ export default function App() {
     setTxError("");
     try {
       await api.createTransaction(txData);
-      // Re-fetch so the list is always in sync with the DB
       await fetchTransactions();
+      return true;
     } catch (err) {
       setTxError(err.message || "Failed to add transaction.");
+      return false;
     }
   }
 
@@ -93,8 +94,10 @@ export default function App() {
       await api.updateTransaction(txData.id, txData);
       setEditingTx(null);
       await fetchTransactions();
+      return true;
     } catch (err) {
       setTxError(err.message || "Failed to update transaction.");
+      return false;
     }
   }
 

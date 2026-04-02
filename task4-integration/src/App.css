@@ -669,10 +669,8 @@ body {
 .tx-actions {
   display: flex;
   gap: var(--sp-1);
-  opacity: 0;
   transition: var(--transition);
 }
-.tx-item:hover .tx-actions { opacity: 1; }
 .tx-action-btn {
   width: 28px;
   height: 28px;
@@ -755,7 +753,6 @@ body {
   .form-col, .right-col { grid-column: 1; }
   .summary-grid { grid-template-columns: 1fr; }
   .chart-grid { grid-template-columns: 1fr; }
-  .tx-actions { opacity: 1; }
 
   .auth-page { grid-template-columns: 1fr; }
   .auth-page::before { display: none; }

@@ -40,7 +40,7 @@ export default function TransactionForm({ onAdd, onUpdate, editingTx, onCancelEd
     setError("");
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!form.description.trim()) { setError("Please enter a description."); return; }
     if (!form.amount || isNaN(form.amount) || Number(form.amount) <= 0) {
@@ -55,14 +55,17 @@ export default function TransactionForm({ onAdd, onUpdate, editingTx, onCancelEd
       date:        form.date || new Date().toISOString().split("T")[0],
     };
 
+    let success;
     if (editingTx) {
-      onUpdate({ ...txData, id: editingTx.id });
+      success = await onUpdate({ ...txData, id: editingTx.id });
     } else {
-      onAdd(txData);
+      success = await onAdd(txData);
     }
 
-    setForm(EMPTY_FORM);
-    setError("");
+    if (success) {
+      setForm(EMPTY_FORM);
+      setError("");
+    }
   }
 
   const isEditing = !!editingTx;

@@ -1,14 +1,6 @@
 // api.js — Centralized API client
-//
-// All fetch calls to the backend live here.
-// Key things matched to your actual Task 3 API:
-//  - POST /transactions expects "timestamp" not "date"
-//  - POST /transactions expects "note" not "description"
-//  - GET /transactions returns { count, transactions: [...] }
-//  - No PUT route exists — edit button is hidden in Task 4
-//  - Password must be 6+ chars (matched in AuthPage too)
 
-const API_BASE = "https://finance-tracker-app-based-on-react-and.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE || "";
 
 // ── Token helpers ─────────────────────────────────────────────
 export const getToken    = ()      => localStorage.getItem("finance_token");
@@ -95,7 +87,18 @@ export async function deleteTransaction(id) {
   });
 }
 
-// No PUT route in Task 3 — edit is disabled in Task 4 UI
-export async function updateTransaction() {
-  throw new Error("No PUT route in Task 3 API.");
+// PUT /transactions/:id
+export async function updateTransaction(id, tx) {
+  const payload = {
+    amount:    tx.amount,
+    type:      tx.type,
+    category:  tx.category,
+    timestamp: tx.date,
+    note:      tx.description || tx.note || "",
+  };
+  return request(`/transactions/${id}`, {
+    method:  "PUT",
+    headers: authHeaders(),
+    body:    JSON.stringify(payload),
+  });
 }

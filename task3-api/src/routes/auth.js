@@ -1,8 +1,3 @@
-// src/routes/auth.js — Authentication Routes
-// Handles user registration and login
-// POST /auth/register — create a new account
-// POST /auth/login    — login and get a JWT token
-
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
@@ -10,13 +5,10 @@ import db from '../db.js'
 
 const router = express.Router()
 
-// ---------- REGISTER ----------
-// POST /auth/register
-// Body: { username, password }
-router.post('/register', (req, res) => {
+// Register
+router.post('/register', async (req, res) => {
   const { username, password } = req.body
 
-  // Basic validation
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required.' })
   }
@@ -26,68 +18,61 @@ router.post('/register', (req, res) => {
   }
 
   try {
-    // Hash the password — never store plain text passwords
-    // 10 = salt rounds (higher = more secure but slower)
     const hashedPassword = bcrypt.hashSync(password, 10)
 
-    // Insert new user into database
-    const stmt = db.prepare(`
-      INSERT INTO users (username, password) VALUES (?, ?)
-    `)
-    const result = stmt.run(username, hashedPassword)
+    const result = await db.query(
+      `INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id`,
+      [username, hashedPassword]
+    )
 
-    // Generate JWT token so user is logged in immediately after registering
+    const newUserId = result.rows[0].id
+
     const token = jwt.sign(
-      { id: result.lastInsertRowid, username },
+      { id: newUserId, username },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }  // Token valid for 7 days
+      { expiresIn: '7d' }
     )
 
     res.status(201).json({
-      message: 'Account created successfully ✅',
+      message: 'Account created successfully',
       token,
-      user: { id: result.lastInsertRowid, username }
+      user: { id: newUserId, username }
     })
 
   } catch (err) {
-    // UNIQUE constraint on username will trigger this
-    if (err.message.includes('UNIQUE')) {
+    if (err.code === '23505') {
       return res.status(409).json({ error: 'Username already taken.' })
     }
     res.status(500).json({ error: 'Server error. Please try again.' })
   }
 })
 
-// ---------- LOGIN ----------
-// POST /auth/login
-// Body: { username, password }
-router.post('/login', (req, res) => {
+// Login
+router.post('/login', async (req, res) => {
   const { username, password } = req.body
 
-  // Basic validation
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required.' })
   }
 
   try {
-    // Find user in database
-    const user = db.prepare(`
-      SELECT * FROM users WHERE username = ?
-    `).get(username)
+    const result = await db.query(
+      `SELECT * FROM users WHERE username = $1`,
+      [username]
+    )
 
-    // User not found
+    const user = result.rows[0]
+
     if (!user) {
       return res.status(401).json({ error: 'Invalid username or password.' })
     }
 
-    // Compare entered password with hashed password in DB
     const passwordMatch = bcrypt.compareSync(password, user.password)
 
     if (!passwordMatch) {
       return res.status(401).json({ error: 'Invalid username or password.' })
     }
 
-    // Password correct — generate JWT token
     const token = jwt.sign(
       { id: user.id, username: user.username },
       process.env.JWT_SECRET,
@@ -95,7 +80,7 @@ router.post('/login', (req, res) => {
     )
 
     res.json({
-      message: 'Login successful ✅',
+      message: 'Login successful',
       token,
       user: { id: user.id, username: user.username }
     })
