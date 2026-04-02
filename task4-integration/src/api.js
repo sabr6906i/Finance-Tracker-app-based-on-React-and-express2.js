@@ -87,7 +87,7 @@ export async function deleteTransaction(id) {
   });
 }
 
-// PUT /transactions/:id
+// Update transaction — tries PUT first, falls back to delete + recreate
 export async function updateTransaction(id, tx) {
   const payload = {
     amount:    tx.amount,
@@ -96,9 +96,17 @@ export async function updateTransaction(id, tx) {
     timestamp: tx.date,
     note:      tx.description || tx.note || "",
   };
-  return request(`/transactions/${id}`, {
-    method:  "PUT",
-    headers: authHeaders(),
-    body:    JSON.stringify(payload),
-  });
+  try {
+    return await request(`/transactions/${id}`, {
+      method:  "PUT",
+      headers: authHeaders(),
+      body:    JSON.stringify(payload),
+    });
+  } catch (err) {
+    if (err.message.includes("404") || err.message.includes("Not Found")) {
+      await deleteTransaction(id);
+      return createTransaction(tx);
+    }
+    throw err;
+  }
 }
