@@ -1,6 +1,6 @@
 // api.js — Centralized API client
 
-const API_BASE = import.meta.env.VITE_API_BASE || "";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://finance-tracker-app-based-on-react-and.onrender.com";
 
 // ── Token helpers ─────────────────────────────────────────────
 export const getToken    = ()      => localStorage.getItem("finance_token");
