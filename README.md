@@ -37,7 +37,7 @@ A full-stack personal finance tracker built as part of the ITC Web Convener Assi
 
 ### Backend (Task 3)
 - Node.js + Express 5
-- SQLite via `better-sqlite3`
+- PostgreSQL
 - JWT authentication via `jsonwebtoken`
 - Password hashing via `bcryptjs`
 
