@@ -10,22 +10,20 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3000
 
-// ---------- MIDDLEWARE ----------
 app.use(cors())
-app.use(express.json())           // Parse JSON bodies
-app.use(express.urlencoded({ extended: true }))  // Parse URL-encoded bodies
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
-// ---------- ROUTES ----------
 app.use('/auth', authRoutes)
 app.use('/transactions', transactionRoutes)
 
-// ---------- HEALTH CHECK ----------
 app.get('/', (req, res) => {
-  res.json({ message: 'Finance Tracker API is running ✅' })
+  res.json({ message: 'Finance Tracker API is running' })
 })
 
-// ---------- START ----------
-initDB()
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
-})
+async function start() {
+  await initDB()
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`))
+}
+
+start()

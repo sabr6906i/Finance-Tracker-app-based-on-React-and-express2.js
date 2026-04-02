@@ -1,50 +1,36 @@
-// src/db.js — SQLite database setup
-// Creates the database file and initializes tables on first run
+import pg from 'pg'
 
-import Database from 'better-sqlite3'
-import path from 'path'
-import { fileURLToPath } from 'url'
+const { Pool } = pg
 
-// __dirname equivalent for ES modules
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+})
 
-// Database file will be created at task3-api/finance.db
-const db = new Database(path.join(__dirname, '../finance.db'))
-
-export function initDB() {
-  // Enable WAL mode — faster reads/writes for SQLite
-  db.pragma('journal_mode = WAL')
-
-  // ---------- USERS TABLE ----------
-  // Stores registered users (id, username, hashed password)
-  db.exec(`
+export async function initDB() {
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
-      id        INTEGER PRIMARY KEY AUTOINCREMENT,
-      username  TEXT    NOT NULL UNIQUE,
-      password  TEXT    NOT NULL,
-      createdAt TEXT    DEFAULT (datetime('now'))
+      id        SERIAL PRIMARY KEY,
+      username  TEXT   NOT NULL UNIQUE,
+      password  TEXT   NOT NULL,
+      createdAt TIMESTAMPTZ DEFAULT NOW()
     )
   `)
 
-  // ---------- TRANSACTIONS TABLE ----------
-  // Each transaction belongs to a user via user_id (foreign key)
-  db.exec(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS transactions (
-      id        INTEGER PRIMARY KEY AUTOINCREMENT,
+      id        SERIAL PRIMARY KEY,
       user_id   INTEGER NOT NULL,
       amount    REAL    NOT NULL,
       type      TEXT    NOT NULL CHECK(type IN ('income', 'expense')),
       category  TEXT    NOT NULL,
       note      TEXT    DEFAULT '',
       timestamp TEXT    NOT NULL,
-      createdAt TEXT    DEFAULT (datetime('now')),
+      createdAt TIMESTAMPTZ DEFAULT NOW(),
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `)
 
-  console.log('Database initialized ✅')
+  console.log('Database initialized')
 }
 
-// Export db instance so routes can use it
-export default db
+export default pool
