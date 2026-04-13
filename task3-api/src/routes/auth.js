@@ -43,6 +43,7 @@ router.post('/register', async (req, res) => {
     if (err.code === '23505') {
       return res.status(409).json({ error: 'Username already taken.' })
     }
+    console.error('Register error:', err)
     res.status(500).json({ error: 'Server error. Please try again.' })
   }
 })
@@ -86,6 +87,7 @@ router.post('/login', async (req, res) => {
     })
 
   } catch (err) {
+    console.error('Login error:', err)
     res.status(500).json({ error: 'Server error. Please try again.' })
   }
 })

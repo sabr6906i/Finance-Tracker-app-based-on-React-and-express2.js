@@ -22,6 +22,7 @@ import Summary       from "./components/Summary";
 import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
 import Charts        from "./components/Charts";
+import AssistantPanel from "./components/AssistantPanel";
 
 export default function App() {
   // ── Auth state ────────────────────────────────────────────
@@ -176,6 +177,12 @@ export default function App() {
           )}
           <Charts transactions={transactions} />
         </div>
+
+        {/* Third col: AI Assistant */}
+        <AssistantPanel
+          transactions={transactions}
+          onTransactionsAdded={fetchTransactions}
+        />
 
       </main>
     </div>
