@@ -23,6 +23,11 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
+      // Forward /assistant/* → http://localhost:3000/assistant/*
+      '/assistant': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     },
   },
 })

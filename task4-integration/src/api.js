@@ -1,6 +1,8 @@
 // api.js — Centralized API client
 
-const API_BASE = import.meta.env.VITE_API_BASE || "https://finance-tracker-app-based-on-react-and.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE !== undefined
+  ? import.meta.env.VITE_API_BASE
+  : "https://finance-tracker-app-based-on-react-and.onrender.com";
 
 // ── Token helpers ─────────────────────────────────────────────
 export const getToken    = ()      => localStorage.getItem("finance_token");
@@ -109,4 +111,77 @@ export async function updateTransaction(id, tx) {
     }
     throw err;
   }
+}
+
+// ══════════════════════════════════════════════════════════════
+// ASSISTANT / AI
+// ══════════════════════════════════════════════════════════════
+
+// GET /assistant/messages
+export async function getMessages() {
+  return request("/assistant/messages", {
+    method:  "GET",
+    headers: authHeaders(),
+  });
+}
+
+// POST /assistant/chat
+export async function sendChat(message) {
+  return request("/assistant/chat", {
+    method:  "POST",
+    headers: authHeaders(),
+    body:    JSON.stringify({ message }),
+  });
+}
+
+// POST /assistant/analyze-image
+export async function analyzeImage(base64, mimeType) {
+  return request("/assistant/analyze-image", {
+    method:  "POST",
+    headers: authHeaders(),
+    body:    JSON.stringify({ base64, mimeType }),
+  });
+}
+
+// POST /assistant/analyze-csv
+export async function analyzeCSV(csvText) {
+  return request("/assistant/analyze-csv", {
+    method:  "POST",
+    headers: authHeaders(),
+    body:    JSON.stringify({ csvText }),
+  });
+}
+
+// POST /assistant/confirm-transactions
+export async function confirmTransactions(transactions) {
+  return request("/assistant/confirm-transactions", {
+    method:  "POST",
+    headers: authHeaders(),
+    body:    JSON.stringify({ transactions }),
+  });
+}
+
+// GET /assistant/patterns
+export async function getPatterns() {
+  return request("/assistant/patterns", {
+    method:  "GET",
+    headers: authHeaders(),
+  });
+}
+
+// POST /assistant/patterns
+export async function savePattern(label, keywords, category, type) {
+  return request("/assistant/patterns", {
+    method:  "POST",
+    headers: authHeaders(),
+    body:    JSON.stringify({ label, keywords, category, type }),
+  });
+}
+
+// DELETE /assistant/patterns/:id
+export async function deletePattern(id) {
+  return request(`/assistant/patterns/${id}`, {
+    method:  "DELETE",
+    headers: authHeaders(),
+  });
 }
